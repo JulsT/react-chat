@@ -15,11 +15,11 @@ export default function callApi(endpoint, token, options, payload) {
         body: JSON.stringify(payload),
         ...options
     })
-      .then(response => response.json())
-      .then ((json) => {
-      if(json.success){
+        .then(response => response.json())
+        .then ((json) => {
+        if(json.success){
         return json;
-      }
-      throw new Error(json.message);
+        }
+        throw new Error(json.message);
     })
 }

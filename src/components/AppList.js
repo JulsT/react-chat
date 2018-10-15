@@ -6,13 +6,11 @@ import TextField from 'material-ui/TextField';
 import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
 import RestoreIcon from 'material-ui-icons/Restore';
 import ExploreIcon from 'material-ui-icons/Explore';
-import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
 import ChatList from './ChatList'; 
+import NewChatButton from './NewChatButton';
 
 const styles = theme => ({
   drawerPaper: {
-    position: 'relative',
     height: '100%',
     width: drawerWidth,
   },
@@ -21,40 +19,70 @@ const styles = theme => ({
     paddingRight: theme.spacing.unit * 3,
     paddingBottom: theme.spacing.unit * 1,
   },
-  button: {
-    position: 'absolute',
-    left: 'auto',
-    right: theme.spacing.unit * 3,
-    bottom: theme.spacing.unit * 10,
-  },
-
 });
 
 const drawerWidth = 320;
 
-const AppList = ({classes, chats}) =>(
+class AppList extends React.Component{
+  state = {
+    searchValue: '',
+    activeTab: 0,
+  };
+  handleSearchChange = (event) => {
+    this.setState({
+      searchValue: event.target.value,
+    });
+  };
+
+  handleTabChange = (event, value) => {
+    this.setState({
+      activeTab: value,
+    });
+  };
+
+  filterChats = (chats) => {
+    const { searchValue } = this.state;
+
+    return chats
+      .filter(chat => chat.title.toLowerCase().includes(searchValue.toLowerCase()))
+      .sort((one, two) => (one.title.toLowerCase() <= two.title.toLowerCase() ? -1 : 1));
+  };
+  render(){
+    const {classes, chats, createChat} = this.props
+    const { activeTab, searchValue } = this.state;
+
+    return(
     <Drawer
-       variant="permanent"
+        variant="permanent"
         classes={{
-        paper: classes.drawerPaper,
-         }}
+          paper: classes.drawerPaper,
+        }}
       >
-     <div className={classes.drawerHeader} >
+      <div className={classes.drawerHeader} >
         <TextField
           fullWidth
-        margin="normal"
-        placeholder="Search chats..."        />
+          margin="normal"
+          placeholder="Search chats..."  
+          value={searchValue}
+          onChange={this.handleSearchChange} 
+        />
         </div>
         <Divider />
-        <ChatList chats={chats} />
-        <Button variant="fab" color="primary" aria-label="add" className={classes.button}>
-          <AddIcon />
-        </Button>
-        <BottomNavigation showLabels >
+        <ChatList chats={this.filterChats(activeTab === 0 ? chats.my : chats.all)}
+          activeChat={chats.active}/>
+        <NewChatButton onClick={createChat}/>
+        <BottomNavigation 
+          value={activeTab}
+          onChange={this.handleTabChange}
+          showLabels 
+        >
           <BottomNavigationAction label="My Chats" icon={<RestoreIcon />} />
           <BottomNavigationAction label="Explore" icon={<ExploreIcon />} />  
         </BottomNavigation>
     </Drawer>
-);
+
+    )
+  }
+};
 
 export default withStyles(styles)(AppList);

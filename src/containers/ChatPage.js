@@ -1,13 +1,43 @@
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import ChatPage from '../components/ChatPage';
+import { logout } from '../actions/auth';
+import { fetchAllChats, fetchMyChats, setActiveChat, createChat, joinChat, deleteChat, leaveChat, sendMessage } from '../actions/chats';
+import {bindActionCreators} from 'redux';
+import * as fromChats from '../reducers/chats';
+import * as fromState from '../reducers';
+import { editUser } from '../actions/users';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => {
+  const activeChat = fromChats.getById(state.chats, state.chats.activeId);
+  return {
+    isAuthenticated: state.auth.isAuthenticated,
+    chats:{
+      active: activeChat,
+      my: fromChats.getByIds(state.chats, state.chats.myIds),
+      all: fromChats.getByIds(state.chats, state.chats.allIds)
+    },
+    activeUser: {
+      ...state.auth.user,
+      isMember: fromState.isMember(state, activeChat),
+      isCreator: fromState.isCreator(state, activeChat),
+      isChatMember: fromState.isChatMember(state, activeChat)
+    },
+    messages: state.messages,
+  }
+};
 
-});
-
-const mapDispatchToProps = dispatch => ({
-
-});
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchAllChats,
+  fetchMyChats,
+  setActiveChat,
+  logout,
+  createChat,
+  deleteChat,
+  joinChat,
+  leaveChat,
+  sendMessage,
+  editUser
+}, dispatch);
 
 export default connect (
   mapStateToProps,

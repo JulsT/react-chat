@@ -4,6 +4,9 @@ import { withStyles } from 'material-ui';
 import Typography from 'material-ui/Typography';
 import Avatar from './Avatar';
 import Paper from 'material-ui/Paper';
+import moment from 'moment';
+import senderName from '../utils/sender-name';
+import colorAvatar from '../utils/color-avatar';
 
 
 const styles = theme => ({
@@ -26,14 +29,37 @@ const styles = theme => ({
     marginRight: theme.spacing.unit * 2,
     backgroundColor: '#e6dcff'
   },
+  statusMessage:{
+    width: '100%',
+    textAlign: 'center'
+  },
+  statusMessageUser:{
+    display: 'inline'
+  }
 });
 
-const ChatMessage = ({ classes, sender, content }) => {
-  const isMessageFromMe = sender === 'me';
+const ChatMessage = ({ classes, sender, content, activeUser, createdAt, statusMessage }) => {
+  const isMessageFromMe = sender._id === activeUser._id;
+  const displayName = senderName(sender);
+  if(statusMessage){
+    return(
+      <div className={classes.messageWrapper}>
+      <Typography className={classes.statusMessage}>
+          <Typography variant="caption" style={{ color: colorAvatar(sender._id)}} className={classes.statusMessageUser}>
+            {displayName}
+          </Typography>
+          {content}
+          <Typography variant="caption" component="span">
+            {moment(createdAt).fromNow()}
+          </Typography>
+        </Typography>
+      </div>
+    )
+  }
 
   const userAvatar = (
-    <Avatar colorAvatar={sender}>
-      {sender}
+    <Avatar colorAvatar={sender._id}>
+      {displayName}
     </Avatar>
   );
 
@@ -47,11 +73,14 @@ const ChatMessage = ({ classes, sender, content }) => {
         classes.message,
         isMessageFromMe && classes.messageFromMe
       )}>
-        <Typography variant="caption">
-          {sender}
+        <Typography variant="caption" style={{color: colorAvatar(sender._id)}}>
+          {displayName}
         </Typography>
         <Typography variant="body1">
           {content}
+        </Typography>
+        <Typography variant="caption" className={classes.time}>
+          {moment(createdAt).fromNow()}
         </Typography>
       </Paper>
       {isMessageFromMe && userAvatar}
