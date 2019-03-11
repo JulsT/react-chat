@@ -1,39 +1,44 @@
-import React from 'react';
-import { withStyles } from 'material-ui/styles';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "material-ui/styles";
+import TextField from "material-ui/TextField";
+import Button from "material-ui/Button";
 
 const styles = theme => ({
   container: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap"
   },
   textField: {
     marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing.unit
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit
   },
   signUpButton: {
-    marginTop: theme.spacing.unit * 2,
-  },
+    marginTop: theme.spacing.unit * 2
+  }
 });
 
-class SignUpForm extends React.Component{
+class SignUpForm extends React.Component {
+  static propTypes = {
+    classes: PropTypes.objectOf(PropTypes.string).isRequired,
+    onSubmit: PropTypes.func.isRequired
+  };
   state = {
-    username:{
-      value: '',
+    username: {
+      value: "",
       isValid: true
     },
-    password:{
-      value: '',
+    password: {
+      value: "",
       isValid: true
     },
     repeatedPassword: {
-      value: '',
-      isValid: true,
-    },
+      value: "",
+      isValid: true
+    }
   };
   validate = () => {
     const { password, repeatedPassword } = this.state;
@@ -41,54 +46,54 @@ class SignUpForm extends React.Component{
 
     this.setState({
       password: { ...password, isValid },
-      repeatedPassword: { ...repeatedPassword, isValid },
+      repeatedPassword: { ...repeatedPassword, isValid }
     });
 
     return isValid;
-  }
-  handleInputChange = (event) => {
+  };
+  handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
 
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       [name]: {
         ...prevState[name],
-        value,
-      },
+        value
+      }
     }));
-  }
+  };
 
-  handleSubmit = (event) =>{
+  handleSubmit = event => {
     event.preventDefault();
-    if(!this.validate()){
+    if (!this.validate()) {
       return;
     }
-    const {username, password} = this.state;
-    console.log('signup:', username.value, password.value);
+    const { username, password } = this.state;
+    console.log("signup:", username.value, password.value);
 
     this.props.onSubmit(username.value, password.value);
-  }
+  };
 
   render() {
     const { classes } = this.props;
-    const {username, password, repeatedPassword} = this.state;
+    const { username, password, repeatedPassword } = this.state;
     return (
       <form className={classes.container} onSubmit={this.handleSubmit}>
         <TextField
-        fullWidth
-        required
+          fullWidth
+          required
           label="Username"
-          placeholder='Type your login...'
-          type='text'
-          name = 'username'
-          autoComplete = 'username'
-          value = {username.value}
-          onChange = {this.handleInputChange}
-          error = {!username.isValid}
+          placeholder="Type your login..."
+          type="text"
+          name="username"
+          autoComplete="username"
+          value={username.value}
+          onChange={this.handleInputChange}
+          error={!username.isValid}
           margin="normal"
         />
         <TextField
-        required
+          required
           fullWidth
           label="Password"
           placeholder="Type your password..."
@@ -113,12 +118,17 @@ class SignUpForm extends React.Component{
           onChange={this.handleInputChange}
           error={!repeatedPassword.isValid}
         />
-        <Button  fullWidth  type="submit" variant="raised" color="primary" className={classes.signUpButton}>
+        <Button
+          fullWidth
+          type="submit"
+          variant="raised"
+          color="primary"
+          className={classes.signUpButton}
+        >
           Sign Up
-      </Button>
+        </Button>
       </form>
-      
-    )
+    );
   }
 }
 export default withStyles(styles)(SignUpForm);

@@ -1,14 +1,14 @@
-import * as types from '../constans/chats';
+import * as types from "../constans";
 
 const initialState = [];
 
-export default (state = initialState, action) =>{
-    switch (action.type) {
-        case types.SEND_MESSAGE_SUCCESS:
-            return [...state, action.payload.message];
-        case types.FETCH_CHAT_SUCCESS:
-            return action.payload.chat.messages;
-        default:
-            return state;
-    }
-}
+export default (state = initialState, action) => {
+  switch (action.type) {
+    case types.RECIEVE_MESSAGE:
+      return [...state, action.payload.message];
+    case types.FETCH_CHAT_SUCCESS:
+      return action.payload.chat.messages;
+    default:
+      return state;
+  }
+};

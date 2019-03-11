@@ -1,30 +1,29 @@
-import * as types from '../constans';
+import * as types from "../constans";
 
-const token = localStorage.getItem('token');
-
+const token = localStorage.getItem("token");
 
 const initialState = {
   isAuthenticated: !!token,
   user: null,
-  token,
+  token
 };
 
 export default function auth(state = initialState, action) {
   switch (action.type) {
     case types.SIGNUP_SUCCESS:
     case types.LOGIN_SUCCESS:
-      return{
+      return {
         ...state,
         isAuthenticated: true,
         user: action.payload.user,
         token: action.payload.token
-      }
+      };
     case types.RECIEVE_AUTH_SUCCESS:
-    return {
-      ...state,
-      isAuthenticated: true,
-      user: action.payload.user
-    }
+      return {
+        ...state,
+        isAuthenticated: true,
+        user: action.payload.user
+      };
     case types.SIGNUP_FAILURE:
     case types.LOGIN_FAILURE:
     case types.RECIEVE_AUTH_FAILURE:
@@ -33,10 +32,10 @@ export default function auth(state = initialState, action) {
         ...state,
         isAuthenticated: false,
         user: null,
-        token: ''
-      };    
-    
-      default:
+        token: ""
+      };
+
+    default:
       return state;
   }
 }

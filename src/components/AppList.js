@@ -1,88 +1,107 @@
-import React from 'react';
-import { withStyles } from 'material-ui/styles';
-import Drawer from 'material-ui/Drawer';
-import Divider from 'material-ui/Divider';
-import TextField from 'material-ui/TextField';
-import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
-import RestoreIcon from 'material-ui-icons/Restore';
-import ExploreIcon from 'material-ui-icons/Explore';
-import ChatList from './ChatList'; 
-import NewChatButton from './NewChatButton';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "material-ui/styles";
+import Drawer from "material-ui/Drawer";
+import Divider from "material-ui/Divider";
+import TextField from "material-ui/TextField";
+import BottomNavigation, {
+  BottomNavigationAction
+} from "material-ui/BottomNavigation";
+import RestoreIcon from "material-ui-icons/Restore";
+import ExploreIcon from "material-ui-icons/Explore";
+import ChatList from "./ChatList";
+import NewChatButton from "./NewChatButton";
 
 const styles = theme => ({
   drawerPaper: {
-    height: '100%',
-    width: drawerWidth,
+    height: "100%",
+    width: drawerWidth
   },
-  drawerHeader:{
+  drawerHeader: {
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
-    paddingBottom: theme.spacing.unit * 1,
-  },
+    paddingBottom: theme.spacing.unit * 1
+  }
 });
 
 const drawerWidth = 320;
 
-class AppList extends React.Component{
-  state = {
-    searchValue: '',
-    activeTab: 0,
+class AppList extends React.Component {
+  static propTypes = {
+    classes: PropTypes.objectOf(PropTypes.string).isRequired,
+    chats: PropTypes.shape({
+      active: PropTypes.object,
+      my: PropTypes.array.isRequired,
+      all: PropTypes.array.isRequired
+    }).isRequired,
+    createChat: PropTypes.func.isRequired,
+    isConnected: PropTypes.bool.isRequired
   };
-  handleSearchChange = (event) => {
+  state = {
+    searchValue: "",
+    activeTab: 0
+  };
+  handleSearchChange = event => {
     this.setState({
-      searchValue: event.target.value,
+      searchValue: event.target.value
     });
   };
 
   handleTabChange = (event, value) => {
     this.setState({
-      activeTab: value,
+      activeTab: value
     });
   };
 
-  filterChats = (chats) => {
+  filterChats = chats => {
     const { searchValue } = this.state;
 
     return chats
-      .filter(chat => chat.title.toLowerCase().includes(searchValue.toLowerCase()))
-      .sort((one, two) => (one.title.toLowerCase() <= two.title.toLowerCase() ? -1 : 1));
+      .filter(chat =>
+        chat.title.toLowerCase().includes(searchValue.toLowerCase())
+      )
+      .sort((one, two) =>
+        one.title.toLowerCase() <= two.title.toLowerCase() ? -1 : 1
+      );
   };
-  render(){
-    const {classes, chats, createChat} = this.props
+  render() {
+    const { classes, chats, createChat, isConnected } = this.props;
     const { activeTab, searchValue } = this.state;
 
-    return(
-    <Drawer
+    return (
+      <Drawer
         variant="permanent"
         classes={{
-          paper: classes.drawerPaper,
+          paper: classes.drawerPaper
         }}
       >
-      <div className={classes.drawerHeader} >
-        <TextField
-          fullWidth
-          margin="normal"
-          placeholder="Search chats..."  
-          value={searchValue}
-          onChange={this.handleSearchChange} 
-        />
+        <div className={classes.drawerHeader}>
+          <TextField
+            fullWidth
+            margin="normal"
+            placeholder="Search chats..."
+            value={searchValue}
+            onChange={this.handleSearchChange}
+          />
         </div>
         <Divider />
-        <ChatList chats={this.filterChats(activeTab === 0 ? chats.my : chats.all)}
-          activeChat={chats.active}/>
-        <NewChatButton onClick={createChat}/>
-        <BottomNavigation 
+        <ChatList
+          disabled={!isConnected}
+          chats={this.filterChats(activeTab === 0 ? chats.my : chats.all)}
+          activeChat={chats.active}
+        />
+        <NewChatButton disabled={!isConnected} onClick={createChat} />
+        <BottomNavigation
           value={activeTab}
           onChange={this.handleTabChange}
-          showLabels 
+          showLabels
         >
           <BottomNavigationAction label="My Chats" icon={<RestoreIcon />} />
-          <BottomNavigationAction label="Explore" icon={<ExploreIcon />} />  
+          <BottomNavigationAction label="Explore" icon={<ExploreIcon />} />
         </BottomNavigation>
-    </Drawer>
-
-    )
+      </Drawer>
+    );
   }
-};
+}
 
 export default withStyles(styles)(AppList);
